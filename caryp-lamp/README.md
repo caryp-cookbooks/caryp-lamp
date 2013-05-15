@@ -2,8 +2,8 @@
 
 ## Requirements
 
-you will need Vagrant 1.1.x environment setup with the berkshelf plugin
-you will need bundler installed.
+* you will need Vagrant 1.1.x environment setup with the berkshelf plugin
+* you will need bundler installed.
 
 ## Usage
 
