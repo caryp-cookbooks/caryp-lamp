@@ -70,32 +70,33 @@ application 'phpvirtualbox' do
   cmd = "gunzip < #{SCHEMA_NAME}.sql.gz | mysql -u#{mysql_connection_info[:username]} -p#{mysql_connection_info[:password]}  #{SCHEMA_NAME}"
   migration_command cmd
 
+  php 'phpvirtualbox' do
+    app_root '/unified_php'
+
+    # database configuration
+    write_settings_file true
+    local_settings_file 'config/db.php'
+    settings_template 'db.php.erb'
+
+    # link shared file to release dir
+    symlink_before_migrate({
+      'config/db.php' => 'config/db.php'
+    })
+
+    database do
+      host     mysql_connection_info[:host]
+      user     'appuser'
+      password 'apppass'
+      schema   SCHEMA_NAME
+    end
+  end
+
   mod_php_apache2 do
     webapp_template 'php.conf.erb'
   end
 
 end
 
-application_php 'phpvirtualbox' do
-  app_root '/unified_php'
-
-  # database configuration
-  write_settings_file true
-  local_settings_file 'config/db.php'
-  settings_template 'db.php.erb'
-
-  # link shared file to release dir
-  symlink_before_migrate({
-    'config/db.php' => 'config/db.php'
-  })
-
-  database do
-    host     mysql_connection_info[:host]
-    user     'appuser'
-    password 'apppass'
-    schema   SCHEMA_NAME
-  end
-end
 
 # grant select,update,insert privileges to all tables in foo db from all hosts
 mysql_database_user node['rs-db']['application']['user'] do
